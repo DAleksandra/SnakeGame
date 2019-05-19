@@ -11,7 +11,7 @@ public class BodyPart {
     }
 
     public void draw(Graphics g) {
-        g.setColor(Color.CYAN);
+        g.setColor(Main.snake_color);
         g.fillRect(xCoor * width, yCoor * height, width, height);
     }
 

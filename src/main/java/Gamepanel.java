@@ -8,13 +8,14 @@ import java.util.Random;
 public class Gamepanel extends JPanel implements Runnable, KeyListener {
 
     public static final int WIDTH = 500, HEIGHT = 500;
+    private int last_key = 1;
     private Thread thread;
     private boolean running = false;
     private BodyPart b;
     private ArrayList<BodyPart> snake;
     private int xCoor = 10, yCoor = 10, size = 5;
     private int ticks = 0;
-    private boolean right = true, left = false, up = false, down = false;
+    private boolean right = true, left = false, up = false, down = false, space = false;
     private Apple apple;
     private ArrayList<Apple> apples;
     private Random r;
@@ -27,6 +28,15 @@ public class Gamepanel extends JPanel implements Runnable, KeyListener {
         snake = new ArrayList<BodyPart>();
         apples = new ArrayList<Apple>();
         r = new Random();
+        Object[] options = {"OK"};
+
+                JOptionPane.showOptionDialog(this,
+                        "It's snake! Click OK when yo're ready to start the game. ","Snake",
+                        JOptionPane.PLAIN_MESSAGE,
+                        JOptionPane.WARNING_MESSAGE,
+                        null,
+                        options,
+                        options[0]);
         start();
     }
 
@@ -50,8 +60,8 @@ public class Gamepanel extends JPanel implements Runnable, KeyListener {
             snake.add(b);
         }
         if(apples.size() == 0) {
-            int xCoor = r.nextInt(49);
-            int yCoor = r.nextInt(49);
+            int xCoor = r.nextInt(50);
+            int yCoor = r.nextInt(50);
 
             apple = new Apple(xCoor, yCoor, 10);
             apples.add(apple);
@@ -97,6 +107,7 @@ public class Gamepanel extends JPanel implements Runnable, KeyListener {
             if(snake.size() > size) {
                 snake.remove(0);
             }
+            last_key = 1;
         }
     }
     public void paint(Graphics g) {
@@ -118,34 +129,54 @@ public class Gamepanel extends JPanel implements Runnable, KeyListener {
     }
 
     public void run() {
+
         while(running) {
-            tick();
-            repaint();
+
+        if(space == true)
+        {
+            try{
+                thread.sleep(1000);
+            }catch (InterruptedException e ) {
+                e.printStackTrace();
+            }
+
+        }
+                tick();
+                repaint();
         }
     }
 
     public void keyPressed(KeyEvent e) {
         int key = e.getKeyCode();
-        if(key == KeyEvent.VK_RIGHT && !left) {
+        if(key == KeyEvent.VK_RIGHT && !left && last_key == 1) {
             up = false;
             down = false;
             right = true;
+            last_key = 0;
         }
-        if(key == KeyEvent.VK_LEFT && !right) {
+        if(key == KeyEvent.VK_LEFT && !right && last_key == 1) {
             up = false;
             down = false;
             left = true;
+            last_key = 0;
         }
-        if(key == KeyEvent.VK_UP && !down) {
+        if(key == KeyEvent.VK_UP && !down && last_key == 1) {
             left = false;
             right = false;
             up = true;
+            last_key = 0;
         }
-        if(key == KeyEvent.VK_DOWN && !up) {
+        if(key == KeyEvent.VK_DOWN && !up && last_key == 1) {
             left = false;
             right = false;
             down = true;
+            last_key = 0;
         }
+        if(key == KeyEvent.VK_SPACE ) {
+            space = !(space);
+
+        }
+
     }
 
     public void keyReleased(KeyEvent arg0) {
